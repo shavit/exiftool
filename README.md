@@ -1,6 +1,9 @@
 # Exiftool
 
-**TODO: Add description**
+Usage
+```
+Exiftool.execute(file_path)
+```
 
 ## Installation
 
@@ -18,4 +21,3 @@ end
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/exiftool](https://hexdocs.pm/exiftool).
-
