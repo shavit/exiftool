@@ -4,37 +4,34 @@ defmodule Exiftool do
   """
 
   @doc """
-  Hello world.
+  Run the exiftool
 
   ## Examples
 
-      iex> Exiftool.hello()
-      :world
+      iex> Exiftool.execute(["test/fixtures/image-1.jpeg"])
+      {:ok, %Exiftool.Result{}}
 
   """
-  def hello do
-    IO.inspect ffmpeg_path()
-    :world
-  end
-
-  @doc """
-
-  """
-  def execute(args) do
+  def execute(args) when is_list(args) do
     case System.cmd ffmpeg_path(), args, stderr_to_stdout: true do
       {data, 0} -> {:ok, parse_result(data)}
       error -> {:error, error}
     end
   end
 
-  defp parse_result(raw_output) do
+  alias Exiftool.Result
+
+  @regex_result_line ~r/([A-Za-z0-9-\:\/\.,\s]+[a-zA-Z0-9])[\s]+:\s([A-Za-z0-9-\:\/\.,\s]+)/
+
+  def parse_result(raw_output) do
     String.split(raw_output, "\n")
       |> Enum.filter(&(&1 != ""))
       |> Enum.map(fn x ->
-        String.split(x, ":")
-        |> Enum.map(&String.trim/1)
-        |> List.to_tuple
+        [_line, key, value] = Regex.run(@regex_result_line, x, [:binary])
+        {key, value}
       end)
+      |> Map.new
+      |> Result.cast
   end
 
   defp ffmpeg_path do
