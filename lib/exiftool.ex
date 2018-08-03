@@ -8,12 +8,16 @@ defmodule Exiftool do
 
   ## Examples
 
-      iex> Exiftool.execute(["test/fixtures/image-1.jpeg"])
-      {:ok, %Exiftool.Result{}}
+      iex> {:ok, result} = Exiftool.execute(["test/fixtures/image-1.jpeg"])
+      iex> %Exiftool.Result{} = result
+      iex> result.file_type_extension
+      "jpg"
+      iex> result.jfif_version
+      "1.01"
 
   """
   def execute(args) when is_list(args) do
-    case System.cmd ffmpeg_path(), args, stderr_to_stdout: true do
+    case System.cmd(exiftool_path(), args, stderr_to_stdout: true) do
       {data, 0} -> {:ok, parse_result(data)}
       error -> {:error, error}
     end
@@ -23,18 +27,20 @@ defmodule Exiftool do
 
   @regex_result_line ~r/([A-Za-z0-9-\:\/\.,\s]+[a-zA-Z0-9])[\s]+:\s([A-Za-z0-9-\:\/\.,\s]+)/
 
+  @spec parse_result(binary) :: Result.t()
   def parse_result(raw_output) do
-    String.split(raw_output, "\n")
-      |> Enum.filter(&(&1 != ""))
-      |> Enum.map(fn x ->
-        [_line, key, value] = Regex.run(@regex_result_line, x, [:binary])
-        {key, value}
-      end)
-      |> Map.new
-      |> Result.cast
+    raw_output
+    |> String.split("\n")
+    |> Enum.filter(&(&1 != ""))
+    |> Enum.map(fn x ->
+      [_line, key, value] = Regex.run(@regex_result_line, x, [:binary])
+      {key, value}
+    end)
+    |> Map.new()
+    |> Result.cast()
   end
 
-  defp ffmpeg_path do
+  defp exiftool_path do
     case Application.get_env(:exiftool, :path, nil) do
       nil -> System.find_executable("exiftool") || exit("Executable not found")
       path -> path
