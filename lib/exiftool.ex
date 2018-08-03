@@ -39,7 +39,7 @@ defmodule Exiftool do
 
   defp ffmpeg_path do
     case Application.get_env(:exiftool, :path, nil) do
-      nil -> System.find_executable("exiftool")
+      nil -> System.find_executable("exiftool") || exit("Executable not found")
       path -> path
     end
   end
