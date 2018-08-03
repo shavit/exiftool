@@ -8,8 +8,12 @@ defmodule Exiftool do
 
   ## Examples
 
-      iex> Exiftool.execute(["test/fixtures/image-1.jpeg"])
-      {:ok, %Exiftool.Result{}}
+      iex> {:ok, result} = Exiftool.execute(["test/fixtures/image-1.jpeg"])
+      iex> %Exiftool.Result{} = result
+      iex> result.file_type_extension
+      "jpg"
+      iex> result.jfif_version
+      "1.01"
 
   """
   def execute(args) when is_list(args) do
