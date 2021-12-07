@@ -33,8 +33,10 @@ defmodule Exiftool do
     |> String.split("\n")
     |> Enum.filter(&(&1 != ""))
     |> Enum.map(fn x ->
-      [_line, key, value] = Regex.run(@regex_result_line, x, [:binary])
-      {key, value}
+       if String.match?(x, @regex_result_line) do
+         [_line, key, value] = Regex.run(@regex_result_line, x, [:binary]) 
+         {key, value}
+       end
     end)
     |> Map.new()
     |> Result.cast()
