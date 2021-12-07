@@ -6,7 +6,7 @@ Elixir library for the [exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool)
 
 Usage
 ```
-iex> Exiftool.execute(file_path)
+iex> Exiftool.execute([file_path])
 {:ok, %Exiftool.Result{}}
 ```
 
