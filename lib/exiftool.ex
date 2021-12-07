@@ -25,7 +25,7 @@ defmodule Exiftool do
 
   alias Exiftool.Result
 
-  @regex_result_line ~r/([A-Za-z0-9-\:\/\.,\s]+[a-zA-Z0-9])[\s]+:\s([A-Za-z0-9-\:\/\.,\s]+)/
+  @regex_result_line ~r/([A-Za-z0-9-\:\/\.,\s]+[a-zA-Z0-9])[\s]*:\s([A-Za-z0-9-\:\/\.,\(\)\[\]\s]*)/
 
   @spec parse_result(binary) :: Result.t()
   def parse_result(raw_output) do
