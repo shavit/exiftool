@@ -6,5 +6,5 @@ otp_release:
 before_install:
    sudo apt-get -y install exiftool
 script:
-  - mix test
+  - mix test --cover
   - mix credo --strict
