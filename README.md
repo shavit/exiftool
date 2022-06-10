@@ -7,7 +7,7 @@ Elixir library for the [exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool)
 Usage
 ```
 iex> Exiftool.execute([file_path])
-{:ok, %Exiftool.Result{}}
+{:ok, result}
 ```
 
 ## Installation
@@ -18,7 +18,7 @@ by adding `exiftool` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:exiftool, "~> 0.1.0"}
+    {:exiftool, "~> 0.2.0"}
   ]
 end
 ```

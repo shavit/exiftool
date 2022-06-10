@@ -1,149 +1,41 @@
 defmodule Exiftool.Result do
   @moduledoc """
-  Information about the input file.
+  Normalize exif data.
   """
-  alias Exiftool.Result
-
-  @type t :: %__MODULE__{
-          access_date_time: binary | nil,
-          aperture: binary | nil,
-          bits_per_sample: binary | nil,
-          camera_model_name: binary | nil,
-          color_components: binary | nil,
-          color_space: binary | nil,
-          color_tone: binary | nil,
-          contrast: binary | nil,
-          datetime_original: binary | nil,
-          directory: binary | nil,
-          drive_mode: binary | nil,
-          encoding_process: binary | nil,
-          exiftool_version_number: binary | nil,
-          extension: binary | nil,
-          exposure_compensation: binary | nil,
-          file_inode_change_date_time: binary | nil,
-          file_access_date_time: binary | nil,
-          file_modification_date_time: binary | nil,
-          file_name: binary | nil,
-          file_number: binary | nil,
-          file_permissions: binary | nil,
-          file_size: binary | nil,
-          file_type: binary | nil,
-          file_type_extension: binary | nil,
-          flash: binary | nil,
-          focal_length: binary | nil,
-          focus_mode: binary | nil,
-          image_height: binary | nil,
-          image_size: binary | nil,
-          image_width: binary | nil,
-          iso: binary | nil,
-          jfif_version: binary | nil,
-          lens: binary | nil,
-          megapixels: binary | nil,
-          metering_mode: binary | nil,
-          mime_type: binary | nil,
-          orientation: binary | nil,
-          owner_name: binary | nil,
-          quality: binary | nil,
-          resolution_unit: binary | nil,
-          saturation: binary | nil,
-          serial_number: binary | nil,
-          sharpness: binary | nil,
-          shootting_mode: binary | nil,
-          shutter_speed: binary | nil,
-          white_balance: binary | nil,
-          x_resolution: binary | nil,
-          y_cb_cr_sub_sampling: binary | nil,
-          y_resolution: binary | nil
-        }
-
-  defstruct access_date_time: nil,
-            aperture: nil,
-            bits_per_sample: nil,
-            camera_model_name: nil,
-            color_components: nil,
-            color_space: nil,
-            color_tone: nil,
-            contrast: nil,
-            datetime_original: nil,
-            directory: nil,
-            drive_mode: nil,
-            encoding_process: nil,
-            exiftool_version_number: nil,
-            extension: nil,
-            exposure_compensation: nil,
-            file_inode_change_date_time: nil,
-            file_access_date_time: nil,
-            file_modification_date_time: nil,
-            file_name: nil,
-            file_number: nil,
-            file_permissions: nil,
-            file_size: nil,
-            file_type: nil,
-            file_type_extension: nil,
-            flash: nil,
-            focal_length: nil,
-            focus_mode: nil,
-            image_height: nil,
-            image_size: nil,
-            image_width: nil,
-            iso: nil,
-            jfif_version: nil,
-            lens: nil,
-            megapixels: nil,
-            metering_mode: nil,
-            mime_type: nil,
-            orientation: nil,
-            owner_name: nil,
-            quality: nil,
-            resolution_unit: nil,
-            saturation: nil,
-            serial_number: nil,
-            sharpness: nil,
-            shootting_mode: nil,
-            shutter_speed: nil,
-            white_balance: nil,
-            x_resolution: nil,
-            y_cb_cr_sub_sampling: nil,
-            y_resolution: nil
 
   @doc """
-  Cast a map into a `%Result{}` struct
+  read/1 normalize map keys.
+
+    *  Replace spaces.
+    *  Replace backslashes.
+    *  Replace dots.
+    *  Downcase keys.
 
     ## Examples
 
-        iex> Result.cast(%{bits_per_sample: "8", color_components: "3",})
-        %Result{bits_per_sample: "8", color_components: "3"}
+        iex> Result.read(%{bits_per_sample: "8", color_components: "3",})
+        %{"bits_per_sample" => "8", "color_components" => "3"}
   """
-  @spec cast(map) :: t
-  def cast(result_map) do
-    sanitized_map = sanitize_map(result_map)
-    struct(%Result{}, sanitized_map)
+  @spec read(map) :: Map.t()
+  def read(m) when is_map(m) do
+    m |> Enum.map(&map_sanitize_kv/1) |> Map.new()
   end
+
+  defp map_sanitize_kv({k, v}), do: {sanitize_key(k), sanitize_value(v)}
 
   @regex_replace_spaces ~r/([\s]+)/
   @regex_to_underscore ~r/(\s|\.|\\|\/)/
 
-  @doc """
-  Convert the map keys and prepare them for the `Result{}` struct.
-
-    *  Replace spaces.
-    *  Repalce backslashes.
-    *  Replace dots.
-    *  Downcase the key
-  """
-  @spec sanitize_map(map) :: map
-  def sanitize_map(result_map) do
-    result_map
-    |> Enum.map(fn {k, v} -> {sanitaize_key(k), v} end)
-    |> Map.new()
-  end
-
-  defp sanitaize_key(key) do
+  defp sanitize_key(key) do
     key = Regex.replace(@regex_replace_spaces, key, " ")
     key = Regex.replace(@regex_to_underscore, key, "_")
+    String.downcase(key)
+  end
 
-    key
-    |> String.downcase()
-    |> String.to_atom()
+  defp sanitize_value(value) do
+    case String.trim(value) do
+      "" -> nil
+      v -> v
+    end
   end
 end

@@ -4,7 +4,7 @@ defmodule Exiftool.MixProject do
   def project do
     [
       app: :exiftool,
-      version: "0.1.0",
+      version: "0.2.0",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -29,7 +29,7 @@ defmodule Exiftool.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.22", only: :dev, runtime: false}
     ]
   end
