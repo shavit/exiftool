@@ -27,15 +27,30 @@ defmodule Exiftool.ResultTest do
     "Resolution Unit" => "None",
     "X Resolution" => "1",
     "Y Cb Cr Sub Sampling" => "YCbCr4:2:0 ",
-    "Y Resolution" => "1"
+    "Y Resolution" => "1",
+    "APP14 Flags 0" => "[14], Encoded with Blend=1 downsampling",
+    "APP14 Flags 1" => "(none)",
+    "Baby Age" => " (not set)",
+    "Data Dump" => " (Binary data 8200 bytes, use -b option to extract)",
+    "Internal Serial Number" => " (F23) 2008:11:20 no. 0182",
+    "Manufacture Date" => " ",
+    "Scale Factor To 35 mm Equivalent" => "5.8",
+    "Sensor" => " ",
+    "Thumbnail Image" => " (Binary data 7496 bytes, use -b option to extract)"
   }
 
-  test "should cast results into a struct" do
-    assert %Result{} = Result.cast @result_map
-  end
-
-  test "should sanitize map keys" do
-    assert result_map = Result.sanitize_map @result_map
-    assert is_map(result_map)
+  test "should cast results into a map" do
+    assert m = Result.read(@result_map)
+    assert is_map(m)
+    assert m["app14_flags_0"] == "[14], Encoded with Blend=1 downsampling"
+    assert m["app14_flags_1"] == "(none)"
+    assert m["baby_age"] == "(not set)"
+    assert m["bits_per_sample"] == "8"
+    assert m["internal_serial_number"] == "(F23) 2008:11:20 no. 0182"
+    assert m["manufacture_date"] == nil
+    assert m["sensor"] == nil
+    assert m["scale_factor_to_35_mm_equivalent"] == "5.8"
+    assert m["thumbnail_image"] == "(Binary data 7496 bytes, use -b option to extract)"
+    assert m["y_cb_cr_sub_sampling"] == "YCbCr4:2:0"
   end
 end

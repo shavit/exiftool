@@ -46,6 +46,6 @@ defmodule Exiftool do
 
   defp exiftool_path do
     cmd = Application.get_env(:exiftool, :path) || "exiftool"
-    System.find_executable(cmd) || exit("Executable not found")
+    System.find_executable(cmd) || raise Exception.format(:error, "Executable not found")
   end
 end
