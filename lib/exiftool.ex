@@ -25,7 +25,7 @@ defmodule Exiftool do
 
   alias Exiftool.Result
 
-  @regex_result_line ~r/([A-Za-z0-9-\:\/\.,\s]+[a-zA-Z0-9])[\s]+:\s([A-Za-z0-9-\:\/\.,\s]+)/
+  @regex_result_line ~r/([A-Za-z0-9-\:\/\.,\s]+[a-zA-Z0-9])[\s]*:\s([A-Za-z0-9-\:\/\.,\(\)\[\]\s]*)/
 
   @spec parse_result(binary) :: Result.t()
   def parse_result(raw_output) do
@@ -33,8 +33,10 @@ defmodule Exiftool do
     |> String.split("\n")
     |> Enum.filter(&(&1 != ""))
     |> Enum.map(fn x ->
-      [_line, key, value] = Regex.run(@regex_result_line, x, [:binary])
-      {key, value}
+       if String.match?(x, @regex_result_line) do
+         [_line, key, value] = Regex.run(@regex_result_line, x, [:binary]) 
+         {key, value}
+       end
     end)
     |> Map.new()
     |> Result.cast()
